@@ -63,11 +63,61 @@ public class JdbcTemplate {
         Validate.notBlank(sql, "The sql must not be blank");
         Validate.notNull(rowMapper, "The rowMapper must not be null");
 
-        return withConnection(connection -> {
-            try (PreparedStatement st = prepareStatement(connection, sql, params);) {
-                return executeQuery(st, rowMapper);
-            }
-        });
+        return withConnection(connection -> select(connection, sql, rowMapper, params));
+    }
+
+    public <T> List<T> select(Connection connection, String sql, RowMapper<T> rowMapper, Object... params) throws SQLException {
+        Validate.notNull(connection, "The connection must not be null");
+        Validate.notBlank(sql, "The sql must not be blank");
+        Validate.notNull(rowMapper, "The rowMapper must not be null");
+
+        try (PreparedStatement st = prepareStatement(connection, sql, params)) {
+            return query(st, rowMapper);
+        }
+    }
+
+    public <T> T selectOne(String sql, RowMapper<T> rowMapper, Object... params) throws SQLException {
+        return withConnection(connection -> selectOne(connection, sql, rowMapper, params));
+    }
+
+    public <T> T selectOne(Connection connection, String sql, RowMapper<T> rowMapper, Object... params) throws SQLException {
+        Validate.notNull(connection, "The connection must not be null");
+        Validate.notBlank(sql, "The sql must not be blank");
+        Validate.notNull(rowMapper, "The rowMapper must not be null");
+
+        try (PreparedStatement st = prepareStatement(connection, sql, params)) {
+            return queryForOne(st, rowMapper);
+        }
+    }
+
+    /**
+     * Execute an INSERT {@code sql} statement.
+     *
+     * @param sql the sql statement
+     * @param params the statement parameters
+     * @return the number of rows affected
+     * @throws SQLException if an error occurs
+     */
+    public int insert(String sql, Object... params) throws SQLException {
+        return withConnection(connection -> insert(connection, sql, params));
+    }
+
+    /**
+     * Execute an INSERT {@code sql} statement.
+     *
+     * @param connection an open connection
+     * @param sql the sql statement
+     * @param params the statement parameters
+     * @return the number of rows affected
+     * @throws SQLException if an error occurs
+     */
+    public int insert(Connection connection, String sql, Object... params) throws SQLException {
+        Validate.notNull(connection, "The connection must not be null");
+        Validate.notBlank(sql, "The sql must not be blank");
+
+        try (PreparedStatement st = prepareStatement(connection, sql, params)) {
+            return st.executeUpdate();
+        }
     }
 
     public PreparedStatement prepareStatement(Connection connection, String sql, Object... params) throws SQLException {
@@ -125,9 +175,23 @@ public class JdbcTemplate {
         }
     }
 
-    private <T> List<T> executeQuery(PreparedStatement st, RowMapper<T> rowMapper) throws SQLException {
-        try (ResultSet resultSet = st.executeQuery();) {
+    public <T> List<T> query(PreparedStatement st, RowMapper<T> rowMapper) throws SQLException {
+        try (ResultSet resultSet = st.executeQuery()) {
             return mapRows(resultSet, rowMapper);
+        }
+    }
+
+    public <T> T queryForOne(PreparedStatement st, RowMapper<T> rowMapper) throws SQLException {
+        try (ResultSet resultSet = st.executeQuery()) {
+            if (!resultSet.next()) {
+                return null;
+            }
+
+            T result = rowMapper.processRow(resultSet, 1L);
+            if (resultSet.next()) {
+                throw new SQLException("Multiple results returned when one expected");
+            }
+            return result;
         }
     }
 
