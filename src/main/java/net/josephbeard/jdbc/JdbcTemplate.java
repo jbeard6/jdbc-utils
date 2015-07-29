@@ -18,9 +18,12 @@ public class JdbcTemplate {
 
     private final DataSource dataSource;
 
+    private boolean brokenMetadata;
+
     public JdbcTemplate(DataSource dataSource) {
         Validate.notNull(dataSource, "The dataSource must not be null");
         this.dataSource = dataSource;
+        this.brokenMetadata = false;
     }
 
     public DataSource getDataSource() {
@@ -144,34 +147,48 @@ public class JdbcTemplate {
         return statement;
     }
 
-    // TODO This method is currently broken
-    public void applyParameters(PreparedStatement statement, Object... params) throws SQLException {
+    private ParameterMetaData getMetadata(PreparedStatement statement) throws SQLException {
         Validate.notNull(statement, "The statement must not be null");
+
+        if (brokenMetadata) {
+            return null;
+        }
 
         try {
             ParameterMetaData md = statement.getParameterMetaData();
-            if (md == null) {
-                LOGGER.warn("Statement returned null ParameterMetaData!");
-            } else {
-                int expectedParameters = md.getParameterCount();
-                int providedParameters = params == null ? 0 : params.length;
-                Validate.isTrue(expectedParameters == providedParameters, "Expected {} parameters but received {}.", expectedParameters, providedParameters);
+            if (md == null) { // Broken implementations will return null instead of throwing an exception
+                LOGGER.warn("Parameter Metadata Feature is not supported.");
+                brokenMetadata = true;
             }
+            return md;
+        } catch (SQLFeatureNotSupportedException ex) {
+            LOGGER.warn("Parameter Metadata Feature is not supported.", ex);
+            brokenMetadata = true;
+            return null;
+        }
+    }
 
-            if (params != null) {
-                for (int i = 0; i < params.length; i++) {
-                    final int parameterIndex = i + 1;
+    public void applyParameters(PreparedStatement statement, Object... params) throws SQLException {
+        Validate.notNull(statement, "The statement must not be null");
 
-                    Object value = params[i];
-                    if (value == null) {
-                        statement.setNull(parameterIndex, md == null ? Types.VARCHAR : md.getParameterType(parameterIndex));
-                    } else {
-                        statement.setObject(parameterIndex, value);
-                    }
+        ParameterMetaData md = getMetadata(statement);
+        if (md != null) {
+            int expectedParameters = md.getParameterCount();
+            int providedParameters = params == null ? 0 : params.length;
+            Validate.isTrue(expectedParameters == providedParameters, "Expected {} parameters but received {}.", expectedParameters, providedParameters);
+        }
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                final int parameterIndex = i + 1;
+
+                Object value = params[i];
+                if (value == null) {
+                    statement.setNull(parameterIndex, md == null ? Types.VARCHAR : md.getParameterType(parameterIndex));
+                } else {
+                    statement.setObject(parameterIndex, value);
                 }
             }
-        } catch (SQLFeatureNotSupportedException ex) {
-            LOGGER.warn("ParameterMetaData is not supported.", ex);
         }
     }
 
