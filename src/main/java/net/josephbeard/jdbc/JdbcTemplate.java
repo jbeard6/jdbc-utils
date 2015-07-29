@@ -35,7 +35,7 @@ public class JdbcTemplate {
         }
     }
 
-    public <T> T withTransaction(ConnectionCallback<T> callback) throws SQLException {
+    public <T> T doInTransaction(ConnectionCallback<T> callback) throws SQLException {
         Validate.notNull(callback, "The callback must not be null");
 
         return withConnection(connection -> {
@@ -53,6 +53,8 @@ public class JdbcTemplate {
                 connection.rollback();
                 LOGGER.debug("Rolled back transaction on {}", connection);
                 throw t;
+            } finally {
+                connection.setAutoCommit(true);
             }
         });
     }
