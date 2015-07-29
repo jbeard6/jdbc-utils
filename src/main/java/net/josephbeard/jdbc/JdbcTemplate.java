@@ -31,11 +31,11 @@ public class JdbcTemplate {
         Validate.notNull(callback, "The callback must not be null");
 
         try (Connection connection = dataSource.getConnection()) {
-            return callback.doInConnection(connection);
+            return callback.execute(connection);
         }
     }
 
-    public <T> T withTransaction(TransactionCallback<T> callback) throws SQLException {
+    public <T> T withTransaction(ConnectionCallback<T> callback) throws SQLException {
         Validate.notNull(callback, "The callback must not be null");
 
         return withConnection(connection -> {
@@ -43,7 +43,7 @@ public class JdbcTemplate {
             LOGGER.debug("Started transaction on {}", connection);
 
             try {
-                T result = callback.doInTransaction(connection);
+                T result = callback.execute(connection);
 
                 connection.commit();
                 LOGGER.debug("Committed transaction on {}", connection);

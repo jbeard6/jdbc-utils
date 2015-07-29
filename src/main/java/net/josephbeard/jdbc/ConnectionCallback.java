@@ -8,6 +8,6 @@ import java.sql.SQLException;
  */
 public interface ConnectionCallback<T> {
 
-    T doInConnection(Connection connection) throws SQLException;
+    T execute(Connection connection) throws SQLException;
 
 }
