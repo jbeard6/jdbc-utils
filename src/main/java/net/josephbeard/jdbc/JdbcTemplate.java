@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class JdbcTemplate {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(JdbcTemplate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTemplate.class);
 
     private final DataSource dataSource;
 
