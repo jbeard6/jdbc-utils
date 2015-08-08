@@ -4,10 +4,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * A callback for performing operations with an open {@link Connection}.
+ * Callback interface for behavior performed within a {@link Connection}.
  */
+@FunctionalInterface
 public interface ConnectionCallback<T> {
 
+    /**
+     * Execute any behavior within the open {@link Connection}.
+     * Implementations are not permitted to {@link Connection#close()}
+     * the {@code connection}.
+     *
+     * @param connection an open connection
+     */
     T execute(Connection connection) throws SQLException;
 
 }
