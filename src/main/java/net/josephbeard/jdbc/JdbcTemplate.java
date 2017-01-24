@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Templates for performing JDBC operations.
@@ -168,10 +169,10 @@ public class JdbcTemplate {
      * @param rowMapper the callback for mapping the query {@link ResultSet} row
      * @param params    the parameters to the {@code sql} query (optional)
      * @param <T>       the type of result of the {@code rowMapper} callback
-     * @return the mapped value of the {@link ResultSet} row, or <code>null</code> if the query returned no results
+     * @return optional of the mapped value of the {@link ResultSet} row, or {@link Optional#empty()} if the query returned no results
      * @throws SQLException if an error occurs or more than one row was returned
      */
-    public <T> T selectOne(String sql, RowMapper<T> rowMapper, ParameterValue... params) throws SQLException {
+    public <T> Optional<T> selectOne(String sql, RowMapper<T> rowMapper, ParameterValue... params) throws SQLException {
         return withConnection(connection -> selectOne(connection, sql, rowMapper, params));
     }
 
@@ -186,10 +187,10 @@ public class JdbcTemplate {
      * @param rowMapper  the callback for mapping the query {@link ResultSet} row
      * @param params     the parameters to the {@code sql} query (optional)
      * @param <T>        the type of result of the {@code rowMapper} callback
-     * @return the mapped value of the {@link ResultSet} row, or <code>null</code> if the query returned no results
+     * @return optional of the mapped value of the {@link ResultSet} row, or {@link Optional#empty()} if the query returned no results
      * @throws SQLException if an error occurs or more than one row was returned
      */
-    public <T> T selectOne(Connection connection, String sql, RowMapper<T> rowMapper, ParameterValue... params)
+    public <T> Optional<T> selectOne(Connection connection, String sql, RowMapper<T> rowMapper, ParameterValue... params)
             throws SQLException {
         Validate.notNull(connection, "The connection must not be null");
         Validate.notBlank(sql, "The sql must not be blank");
@@ -369,23 +370,23 @@ public class JdbcTemplate {
      * @param statement the statement to execute
      * @param rowMapper the callback for mapping the query {@link ResultSet} row
      * @param <T>       the type of result of the {@code rowMapper} callback
-     * @return the mapped value of the {@link ResultSet} row, or <code>null</code> if the query returned no results
+     * @return optional of the mapped value of the {@link ResultSet} row, or {@link Optional#empty()} if the query returned no results
      * @throws SQLException if an error occurs or more than one row was returned
      */
-    public <T> T queryForOne(PreparedStatement statement, RowMapper<T> rowMapper) throws SQLException {
+    public <T> Optional<T> queryForOne(PreparedStatement statement, RowMapper<T> rowMapper) throws SQLException {
         Validate.notNull(statement, "The statement must not be null");
         Validate.notNull(rowMapper, "The rowMapper must not be null");
 
         try (ResultSet resultSet = statement.executeQuery()) {
             if (!resultSet.next()) {
-                return null;
+                return Optional.empty();
             }
 
             T result = rowMapper.processRow(resultSet, 1L);
             if (resultSet.next()) {
                 throw new SQLException("Multiple results returned when one expected");
             }
-            return result;
+            return Optional.ofNullable(result);
         }
     }
 
