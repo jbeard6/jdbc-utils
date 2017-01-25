@@ -45,4 +45,21 @@
         </pluginManagement>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>thebeardfamily-releases</id>
+            <name>The Beard Family Repository</name>
+            <url>http://nexus.thebeardfamily.net/content/repositories/releases/</url>
+            <layout>default</layout>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>thebeardfamily-snapshots</id>
+            <name>The Beard Family Repository</name>
+            <url>http://nexus.thebeardfamily.net/content/repositories/snapshots/</url>
+            <layout>default</layout>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
