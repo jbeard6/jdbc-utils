@@ -6,7 +6,7 @@ import java.sql.SQLException;
 /**
  * An abstraction for retrieving a {@link Connection}.
  */
-public interface ConnectionProvider {
+public interface ConnectionProvider extends AutoCloseable {
 
     /**
      * Obtain an open {@link Connection}.
@@ -15,5 +15,14 @@ public interface ConnectionProvider {
      * @throws SQLException if an error occurs obtaining a connection
      */
     Connection getConnection() throws SQLException;
+
+    /**
+     * Close this {@link ConnectionProvider}.
+     *
+     * @throws SQLException if an error occurs while closing
+     */
+    default void close() throws SQLException {
+        // Override to clean up
+    }
 
 }
