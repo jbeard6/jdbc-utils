@@ -29,6 +29,13 @@ public abstract class SQL {
         return new StringValue(value);
     }
 
+    public static ParameterValue string(Object value) {
+        if (value == null) {
+            return new NullValue(Types.VARCHAR);
+        }
+        return new StringValue(value.toString());
+    }
+
     public static ParameterValue shortInt(short value) {
         return new ShortValue(value);
     }
