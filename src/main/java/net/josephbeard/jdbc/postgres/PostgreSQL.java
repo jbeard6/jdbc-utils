@@ -2,7 +2,6 @@ package net.josephbeard.jdbc.postgres;
 
 import net.josephbeard.jdbc.ParameterValue;
 import net.josephbeard.jdbc.SQL;
-import org.postgresql.ds.common.PGObjectFactory;
 import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
