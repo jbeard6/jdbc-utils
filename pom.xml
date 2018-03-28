@@ -8,12 +8,29 @@
     <artifactId>jdbc-utils</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
+    <name>JDBC Utilities</name>
+    <inceptionYear>2017</inceptionYear>
+    <description>Utilities to simplify JDBC access.</description>
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <id>jbeard6</id>
+            <name>Joseph Beard</name>
+            <email>joseph@josephbeard.net</email>
+            <url>http://www.josephbeard.net</url>
+            <roles>
+                <role>Project Founder</role>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
