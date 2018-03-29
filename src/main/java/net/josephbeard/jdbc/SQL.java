@@ -1,10 +1,10 @@
 package net.josephbeard.jdbc;
 
-import org.apache.commons.lang3.Validate;
-
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
+
+import org.apache.commons.lang3.Validate;
 
 /**
  * Utility class for SQL.

@@ -1,10 +1,11 @@
 package net.josephbeard.jdbc;
 
-import org.apache.commons.lang3.Validate;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.lang3.Validate;
 
 /**
  * Adapter for a {@link DataSource} to a {@link ConnectionProvider}.

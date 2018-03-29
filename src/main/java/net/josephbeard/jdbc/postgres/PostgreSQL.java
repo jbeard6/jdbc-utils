@@ -1,12 +1,13 @@
 package net.josephbeard.jdbc.postgres;
 
-import net.josephbeard.jdbc.ParameterValue;
-import net.josephbeard.jdbc.SQL;
-import org.postgresql.util.PGobject;
-
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.UUID;
+
+import org.postgresql.util.PGobject;
+
+import net.josephbeard.jdbc.ParameterValue;
+import net.josephbeard.jdbc.SQL;
 
 /**
  * Utility class for working with PostgreSQL.

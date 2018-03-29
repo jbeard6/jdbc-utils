@@ -3,11 +3,12 @@
  */
 package net.josephbeard.jdbc.postgres;
 
-import net.josephbeard.jdbc.ParameterValue;
-import org.postgresql.util.PGobject;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import org.postgresql.util.PGobject;
+
+import net.josephbeard.jdbc.ParameterValue;
 
 /**
  * A representation of the PostgreSQL {@link PGobject} type.

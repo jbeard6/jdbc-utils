@@ -1,11 +1,11 @@
 package net.josephbeard.jdbc;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * An {@link Array} {@link ParameterValue}.

@@ -1,14 +1,15 @@
 package net.josephbeard.jdbc;
 
-import org.apache.commons.lang3.Validate;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
+
 /**
- * A {@link ResultSetHandler} that invokes a {@link RowMapper} to return a {@link List} of mapped rows.
+ * A {@link ResultSetHandler} that invokes a {@link RowMapper} to return a
+ * {@link List} of mapped rows.
  */
 public class RowMapperResultSetHandler<T> implements ResultSetHandler<List<T>> {
 

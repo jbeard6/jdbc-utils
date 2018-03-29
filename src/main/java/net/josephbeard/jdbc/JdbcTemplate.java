@@ -1,13 +1,19 @@
 package net.josephbeard.jdbc;
 
-import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Templates for performing JDBC operations.
@@ -19,9 +25,10 @@ public class JdbcTemplate {
     private final net.josephbeard.jdbc.ConnectionProvider connectionProvider;
 
     /**
-     * Flag to bypass the potentially expensive operation of getting metadata from the JDBC driver if it is known to be
-     * broken.  This flag starts false but is permanently set the first time that metadata is requested and it is found
-     * to be unsupported.
+     * Flag to bypass the potentially expensive operation of getting metadata from
+     * the JDBC driver if it is known to be broken. This flag starts false but is
+     * permanently set the first time that metadata is requested and it is found to
+     * be unsupported.
      */
     private boolean ignoreMetadata;
 
@@ -38,13 +45,17 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute some behavior with an injected {@link Connection}.  The {@link ConnectionCallback} will receive an open
-     * {@link Connection} which will be closed upon completion.
+     * Execute some behavior with an injected {@link Connection}. The
+     * {@link ConnectionCallback} will receive an open {@link Connection} which will
+     * be closed upon completion.
      *
-     * @param callback the behavior to be executed
-     * @param <T>      the type of result from the {@code callback}
+     * @param callback
+     *            the behavior to be executed
+     * @param <T>
+     *            the type of result from the {@code callback}
      * @return the result of the {@code callback}
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> T withConnection(ConnectionCallback<T> callback) throws SQLException {
         Validate.notNull(callback, "The callback must not be null");
@@ -55,15 +66,19 @@ public class JdbcTemplate {
     }
 
     /**
-     * This method obtains a {@link Connection} and starts a transaction for the {@link ConnectionCallback} behavior.
-     * The transaction will be committed if the {@link ConnectionCallback} completes successfully, otherwise it will be
-     * rolled back.  The {@link ConnectionCallback} will receive an open {@link Connection} which will be closed upon
-     * completion.
+     * This method obtains a {@link Connection} and starts a transaction for the
+     * {@link ConnectionCallback} behavior. The transaction will be committed if the
+     * {@link ConnectionCallback} completes successfully, otherwise it will be
+     * rolled back. The {@link ConnectionCallback} will receive an open
+     * {@link Connection} which will be closed upon completion.
      *
-     * @param callback the behavior to be executed in a transaction
-     * @param <T>      the type of result from the {@code callback}
+     * @param callback
+     *            the behavior to be executed in a transaction
+     * @param <T>
+     *            the type of result from the {@code callback}
      * @return the result of the {@code callback}
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> T doInTransaction(ConnectionCallback<T> callback) throws SQLException {
         Validate.notNull(callback, "The callback must not be null");
@@ -90,14 +105,20 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute the {@code sql} query with the specified {@code params} and return the results of the {@link RowMapper}.
+     * Execute the {@code sql} query with the specified {@code params} and return
+     * the results of the {@link RowMapper}.
      *
-     * @param sql       the SQL statement
-     * @param rowMapper the callback for mapping the query {@link ResultSet} rows
-     * @param params    the parameters to the {@code sql} query (optional)
-     * @param <T>       the type of result of the {@code rowMapper} callback
+     * @param sql
+     *            the SQL statement
+     * @param rowMapper
+     *            the callback for mapping the query {@link ResultSet} rows
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
      * @return list of results from the {@code rowMapper} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> List<T> select(String sql, RowMapper<T> rowMapper, ParameterValue... params) throws SQLException {
         return withConnection(
@@ -105,18 +126,24 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute the {@code sql} query on the {@link Connection}, with the specified {@code params} and return the results
-     * of the {@link RowMapper}.
+     * Execute the {@code sql} query on the {@link Connection}, with the specified
+     * {@code params} and return the results of the {@link RowMapper}.
      * <p>
      * The {@link Connection} will not be closed by this method.
      *
-     * @param connection the connection on which to execute the query
-     * @param sql        the SQL statement
-     * @param rowMapper  the callback for mapping the query {@link ResultSet} rows
-     * @param params     the parameters to the {@code sql} query (optional)
-     * @param <T>        the type of result of the {@code rowMapper} callback
+     * @param connection
+     *            the connection on which to execute the query
+     * @param sql
+     *            the SQL statement
+     * @param rowMapper
+     *            the callback for mapping the query {@link ResultSet} rows
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
      * @return list of results from the {@code rowMapper} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> List<T> select(Connection connection, String sql, RowMapper<T> rowMapper, ParameterValue... params)
             throws SQLException {
@@ -124,15 +151,20 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute the {@code sql} query with the specified {@code params} and return the result
-     * of the {@link ResultSetHandler}.
+     * Execute the {@code sql} query with the specified {@code params} and return
+     * the result of the {@link ResultSetHandler}.
      *
-     * @param sql              the SQL statement
-     * @param resultSetHandler the callback for handling the query {@link ResultSet}
-     * @param params           the parameters to the {@code sql} query (optional)
-     * @param <T>              the type of result of the {@code resultSetHandler} callback
+     * @param sql
+     *            the SQL statement
+     * @param resultSetHandler
+     *            the callback for handling the query {@link ResultSet}
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
+     * @param <T>
+     *            the type of result of the {@code resultSetHandler} callback
      * @return the result of the {@code resultSetHandler} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> T select(String sql, ResultSetHandler<T> resultSetHandler, ParameterValue... params)
             throws SQLException {
@@ -143,21 +175,27 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute the {@code sql} query on the {@link Connection}, with the specified {@code params} and return the result
-     * of the {@link ResultSetHandler}.
+     * Execute the {@code sql} query on the {@link Connection}, with the specified
+     * {@code params} and return the result of the {@link ResultSetHandler}.
      * <p>
      * The {@link Connection} will not be closed by this method.
      *
-     * @param connection       the connection on which to execute the query
-     * @param sql              the SQL statement
-     * @param resultSetHandler the callback for handling the query {@link ResultSet}
-     * @param params           the parameters to the {@code sql} query (optional)
-     * @param <T>              the type of result of the {@code resultSetHandler} callback
+     * @param connection
+     *            the connection on which to execute the query
+     * @param sql
+     *            the SQL statement
+     * @param resultSetHandler
+     *            the callback for handling the query {@link ResultSet}
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
+     * @param <T>
+     *            the type of result of the {@code resultSetHandler} callback
      * @return the result of the {@code resultSetHandler} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> T select(Connection connection, String sql, ResultSetHandler<T> resultSetHandler,
-                        ParameterValue... params) throws SQLException {
+            ParameterValue... params) throws SQLException {
         Validate.notNull(connection, "The connection must not be null");
         Validate.notBlank(sql, "The sql must not be blank");
         Validate.notNull(resultSetHandler, "The resultSetHandler must not be null");
@@ -168,36 +206,51 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute the {@code sql} query with the specified {@code params} and return the result of the {@link RowMapper}.
-     * The {@code sql} query is expected to return, at most, one row.
+     * Execute the {@code sql} query with the specified {@code params} and return
+     * the result of the {@link RowMapper}. The {@code sql} query is expected to
+     * return, at most, one row.
      *
-     * @param sql       the SQL statement
-     * @param rowMapper the callback for mapping the query {@link ResultSet} row
-     * @param params    the parameters to the {@code sql} query (optional)
-     * @param <T>       the type of result of the {@code rowMapper} callback
-     * @return optional of the mapped value of the {@link ResultSet} row, or {@link Optional#empty()} if the query returned no results
-     * @throws SQLException if an error occurs or more than one row was returned
+     * @param sql
+     *            the SQL statement
+     * @param rowMapper
+     *            the callback for mapping the query {@link ResultSet} row
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
+     * @return optional of the mapped value of the {@link ResultSet} row, or
+     *         {@link Optional#empty()} if the query returned no results
+     * @throws SQLException
+     *             if an error occurs or more than one row was returned
      */
     public <T> Optional<T> selectOne(String sql, RowMapper<T> rowMapper, ParameterValue... params) throws SQLException {
         return withConnection(connection -> selectOne(connection, sql, rowMapper, params));
     }
 
     /**
-     * Execute the {@code sql} query on the {@link Connection}, with the specified {@code params} and return the result
-     * of the {@link RowMapper}.  The {@code sql} query is expected to return, at most, one row.
+     * Execute the {@code sql} query on the {@link Connection}, with the specified
+     * {@code params} and return the result of the {@link RowMapper}. The
+     * {@code sql} query is expected to return, at most, one row.
      * <p>
      * The {@link Connection} will not be closed by this method.
      *
-     * @param connection the connection on which to execute the query
-     * @param sql        the SQL statement
-     * @param rowMapper  the callback for mapping the query {@link ResultSet} row
-     * @param params     the parameters to the {@code sql} query (optional)
-     * @param <T>        the type of result of the {@code rowMapper} callback
-     * @return optional of the mapped value of the {@link ResultSet} row, or {@link Optional#empty()} if the query returned no results
-     * @throws SQLException if an error occurs or more than one row was returned
+     * @param connection
+     *            the connection on which to execute the query
+     * @param sql
+     *            the SQL statement
+     * @param rowMapper
+     *            the callback for mapping the query {@link ResultSet} row
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
+     * @return optional of the mapped value of the {@link ResultSet} row, or
+     *         {@link Optional#empty()} if the query returned no results
+     * @throws SQLException
+     *             if an error occurs or more than one row was returned
      */
-    public <T> Optional<T> selectOne(Connection connection, String sql, RowMapper<T> rowMapper, ParameterValue... params)
-            throws SQLException {
+    public <T> Optional<T> selectOne(Connection connection, String sql, RowMapper<T> rowMapper,
+            ParameterValue... params) throws SQLException {
         Validate.notNull(connection, "The connection must not be null");
         Validate.notBlank(sql, "The sql must not be blank");
         Validate.notNull(rowMapper, "The rowMapper must not be null");
@@ -210,25 +263,33 @@ public class JdbcTemplate {
     /**
      * Execute an INSERT {@code sql} statement with the specified {@code params}.
      *
-     * @param sql    the sql statement
-     * @param params the parameters to the {@code sql} query (optional)
+     * @param sql
+     *            the sql statement
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
      * @return the number of rows affected
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public int insert(String sql, ParameterValue... params) throws SQLException {
         return withConnection(connection -> insert(connection, sql, params));
     }
 
     /**
-     * Execute an INSERT {@code sql} statement on the {@link Connection} with the specified {@code params}.
+     * Execute an INSERT {@code sql} statement on the {@link Connection} with the
+     * specified {@code params}.
      * <p>
      * The {@link Connection} will not be closed by this method.
      *
-     * @param connection an open connection
-     * @param sql        the sql statement
-     * @param params     the parameters to the {@code sql} query (optional)
+     * @param connection
+     *            an open connection
+     * @param sql
+     *            the sql statement
+     * @param params
+     *            the parameters to the {@code sql} query (optional)
      * @return the number of rows affected
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public int insert(Connection connection, String sql, ParameterValue... params) throws SQLException {
         Validate.notNull(connection, "The connection must not be null");
@@ -240,16 +301,20 @@ public class JdbcTemplate {
     }
 
     /**
-     * Create a {@link PreparedStatement} to execute the specified {@code sql} statement with the specified
-     * {@code params}.
+     * Create a {@link PreparedStatement} to execute the specified {@code sql}
+     * statement with the specified {@code params}.
      * <p>
      * The {@link Connection} will not be closed by this method.
      *
-     * @param connection an open connection
-     * @param sql        the sql statement
-     * @param params     the parameters to the {@code sql} statement (optional)
+     * @param connection
+     *            an open connection
+     * @param sql
+     *            the sql statement
+     * @param params
+     *            the parameters to the {@code sql} statement (optional)
      * @return the prepared statement with all parameters applied
-     * @throws SQLException if an error occurs while preparing the statement
+     * @throws SQLException
+     *             if an error occurs while preparing the statement
      */
     public PreparedStatement prepareStatement(Connection connection, String sql, ParameterValue... params)
             throws SQLException {
@@ -277,11 +342,14 @@ public class JdbcTemplate {
     }
 
     /**
-     * Obtain the {@link ParameterMetaData} for the {@link PreparedStatement} if the JDBC driver supports it.
+     * Obtain the {@link ParameterMetaData} for the {@link PreparedStatement} if the
+     * JDBC driver supports it.
      *
-     * @param statement the statement
+     * @param statement
+     *            the statement
      * @return the parameter metadata, if supported; <code>null</code> otherwise
-     * @throws SQLException if an error occurs retrieving the metadata
+     * @throws SQLException
+     *             if an error occurs retrieving the metadata
      */
     private ParameterMetaData getMetadata(PreparedStatement statement) throws SQLException {
         assert statement != null : "statement is null!";
@@ -307,8 +375,10 @@ public class JdbcTemplate {
     /**
      * Apply the {@code params} to the {@link PreparedStatement}.
      *
-     * @param statement the statement
-     * @param params    the parameters to apply
+     * @param statement
+     *            the statement
+     * @param params
+     *            the parameters to apply
      * @throws SQLException
      */
     public void applyParameters(PreparedStatement statement, ParameterValue... params) throws SQLException {
@@ -328,7 +398,8 @@ public class JdbcTemplate {
 
                 ParameterValue value = params[i];
                 if (value == null) {
-                    // Most drivers seem to react well to using VARCHAR for null values if the type is unknown
+                    // Most drivers seem to react well to using VARCHAR for null values if the type
+                    // is unknown
                     statement.setNull(parameterIndex, md == null ? Types.VARCHAR : md.getParameterType(parameterIndex));
                 } else {
                     value.applyValue(statement, parameterIndex);
@@ -338,13 +409,18 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute a {@link PreparedStatement} for a query (that is, it returns a {@link ResultSet}).
+     * Execute a {@link PreparedStatement} for a query (that is, it returns a
+     * {@link ResultSet}).
      *
-     * @param statement        the statement to execute
-     * @param resultSetHandler the callback to handle the query {@link ResultSet}
-     * @param <T>              the type of result of the {@code resultSetHandler} callback
+     * @param statement
+     *            the statement to execute
+     * @param resultSetHandler
+     *            the callback to handle the query {@link ResultSet}
+     * @param <T>
+     *            the type of result of the {@code resultSetHandler} callback
      * @return the result of the {@code resultSetHandler} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> T query(PreparedStatement statement, ResultSetHandler<T> resultSetHandler) throws SQLException {
         Validate.notNull(statement, "The statement must not be null");
@@ -356,28 +432,38 @@ public class JdbcTemplate {
     }
 
     /**
-     * Execute a {@link PreparedStatement} for a query (that is, it returns a {@link ResultSet}) and map the results
-     * using the supplied {@link RowMapper}.
+     * Execute a {@link PreparedStatement} for a query (that is, it returns a
+     * {@link ResultSet}) and map the results using the supplied {@link RowMapper}.
      *
-     * @param statement the statement to execute
-     * @param rowMapper the callback for mapping the query {@link ResultSet} rows
-     * @param <T>       the type of result of the {@code rowMapper} callback
+     * @param statement
+     *            the statement to execute
+     * @param rowMapper
+     *            the callback for mapping the query {@link ResultSet} rows
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
      * @return list of results from the {@code rowMapper} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> List<T> query(PreparedStatement statement, RowMapper<T> rowMapper) throws SQLException {
         return query(statement, (resultSet -> mapRows(resultSet, rowMapper)));
     }
 
     /**
-     * Execute a {@link PreparedStatement} for a query (that is, it returns a {@link ResultSet}) that is expected to
-     * return (at most) one row.  The result is mapped using the supplied {@link RowMapper}.
+     * Execute a {@link PreparedStatement} for a query (that is, it returns a
+     * {@link ResultSet}) that is expected to return (at most) one row. The result
+     * is mapped using the supplied {@link RowMapper}.
      *
-     * @param statement the statement to execute
-     * @param rowMapper the callback for mapping the query {@link ResultSet} row
-     * @param <T>       the type of result of the {@code rowMapper} callback
-     * @return optional of the mapped value of the {@link ResultSet} row, or {@link Optional#empty()} if the query returned no results
-     * @throws SQLException if an error occurs or more than one row was returned
+     * @param statement
+     *            the statement to execute
+     * @param rowMapper
+     *            the callback for mapping the query {@link ResultSet} row
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
+     * @return optional of the mapped value of the {@link ResultSet} row, or
+     *         {@link Optional#empty()} if the query returned no results
+     * @throws SQLException
+     *             if an error occurs or more than one row was returned
      */
     public <T> Optional<T> queryForOne(PreparedStatement statement, RowMapper<T> rowMapper) throws SQLException {
         Validate.notNull(statement, "The statement must not be null");
@@ -401,11 +487,15 @@ public class JdbcTemplate {
      * <p>
      * The {@link ResultSet} will not be closed by this method.
      *
-     * @param resultSet the result set to map
-     * @param rowMapper the row mapper
-     * @param <T>       the type of result of the {@code rowMapper} callback
+     * @param resultSet
+     *            the result set to map
+     * @param rowMapper
+     *            the row mapper
+     * @param <T>
+     *            the type of result of the {@code rowMapper} callback
      * @return list of results from the {@code rowMapper} callback
-     * @throws SQLException if an error occurs
+     * @throws SQLException
+     *             if an error occurs
      */
     public <T> List<T> mapRows(ResultSet resultSet, RowMapper<T> rowMapper) throws SQLException {
         Validate.notNull(resultSet, "The resultSet must not be null");

@@ -12,14 +12,16 @@ public interface ConnectionProvider extends AutoCloseable {
      * Obtain an open {@link Connection}.
      *
      * @return an open connection
-     * @throws SQLException if an error occurs obtaining a connection
+     * @throws SQLException
+     *             if an error occurs obtaining a connection
      */
     Connection getConnection() throws SQLException;
 
     /**
      * Close this {@link ConnectionProvider}.
      *
-     * @throws SQLException if an error occurs while closing
+     * @throws SQLException
+     *             if an error occurs while closing
      */
     default void close() throws SQLException {
         // Override to clean up

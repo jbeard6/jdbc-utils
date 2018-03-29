@@ -10,11 +10,11 @@ import java.sql.SQLException;
 public interface ConnectionCallback<T> {
 
     /**
-     * Execute any behavior within the open {@link Connection}.
-     * Implementations are not permitted to {@link Connection#close()}
-     * the {@code connection}.
+     * Execute any behavior within the open {@link Connection}. Implementations are
+     * not permitted to {@link Connection#close()} the {@code connection}.
      *
-     * @param connection an open connection
+     * @param connection
+     *            an open connection
      */
     T execute(Connection connection) throws SQLException;
 
