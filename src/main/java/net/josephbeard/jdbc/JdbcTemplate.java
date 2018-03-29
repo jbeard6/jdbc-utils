@@ -23,12 +23,18 @@ public class JdbcTemplate {
      * broken.  This flag starts false but is permanently set the first time that metadata is requested and it is found
      * to be unsupported.
      */
-    private boolean brokenMetadata;
+    private boolean ignoreMetadata;
 
     public JdbcTemplate(ConnectionProvider connectionProvider) {
         Validate.notNull(connectionProvider, "The connectionProvider must not be null");
         this.connectionProvider = connectionProvider;
-        this.brokenMetadata = false;
+        this.ignoreMetadata = false;
+    }
+
+    public JdbcTemplate(ConnectionProvider connectionProvider, boolean ignoreMetadata) {
+        Validate.notNull(connectionProvider, "The connectionProvider must not be null");
+        this.connectionProvider = connectionProvider;
+        this.ignoreMetadata = ignoreMetadata;
     }
 
     /**
@@ -280,7 +286,7 @@ public class JdbcTemplate {
     private ParameterMetaData getMetadata(PreparedStatement statement) throws SQLException {
         assert statement != null : "statement is null!";
 
-        if (brokenMetadata) {
+        if (ignoreMetadata) {
             return null;
         }
 
@@ -288,12 +294,12 @@ public class JdbcTemplate {
             ParameterMetaData md = statement.getParameterMetaData();
             if (md == null) { // Broken implementations will return null instead of throwing an exception
                 LOGGER.warn("Parameter Metadata Feature is not supported.");
-                brokenMetadata = true;
+                ignoreMetadata = true;
             }
             return md;
         } catch (SQLFeatureNotSupportedException ex) {
             LOGGER.warn("Parameter Metadata Feature is not supported.", ex);
-            brokenMetadata = true;
+            ignoreMetadata = true;
             return null;
         }
     }
