@@ -4,10 +4,12 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.UUID;
 
+import org.apache.commons.lang3.Validate;
 import org.postgresql.util.PGobject;
 
-import net.josephbeard.jdbc.ParameterValue;
 import net.josephbeard.jdbc.JDBC;
+import net.josephbeard.jdbc.ParameterValue;
+import net.josephbeard.jdbc.sql.OffsetClause;
 
 /**
  * Utility class for working with PostgreSQL.
@@ -58,6 +60,20 @@ public abstract class PostgreSQL {
         object.setType(JSONB_TYPE);
         object.setValue(value); // TODO Validate well-formed JSON?
         return new PGobjectValue(object);
+    }
+
+    /**
+     * Return an {@link OffsetClause} in the PostgreSQL SQL dialect.
+     * 
+     * @param offset
+     *            the offset
+     * @return the offset clause
+     */
+    public OffsetClause offset(long offset) {
+        // Yes, zero is a valid (weird) value
+        Validate.isTrue(offset >= 0L, "The offset must not be negative");
+
+        return new PostgreSQLOffsetClause(offset);
     }
 
     private PostgreSQL() {
