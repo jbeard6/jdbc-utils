@@ -23,6 +23,7 @@ public interface ConnectionProvider extends AutoCloseable {
      * @throws SQLException
      *             if an error occurs while closing
      */
+    @Override
     default void close() throws SQLException {
         // Override to clean up
     }
