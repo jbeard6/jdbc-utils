@@ -9,6 +9,7 @@ import org.postgresql.util.PGobject;
 
 import net.josephbeard.jdbc.JDBC;
 import net.josephbeard.jdbc.ParameterValue;
+import net.josephbeard.jdbc.sql.LimitClause;
 import net.josephbeard.jdbc.sql.OffsetClause;
 
 /**
@@ -74,6 +75,20 @@ public abstract class PostgreSQL {
         Validate.isTrue(offset >= 0L, "The offset must not be negative");
 
         return new PostgreSQLOffsetClause(offset);
+    }
+
+    /**
+     * Return a {@link LimitClause} in the PostgreSQL SQL dialect.
+     * 
+     * @param limit
+     *            the limit
+     * @return the limit clause
+     */
+    public LimitClause limit(long limit) {
+        // Yes, zero is a valid (weird) value
+        Validate.isTrue(limit >= 0L, "The limit must not be negative");
+
+        return new PostgreSQLLimitClause(limit);
     }
 
     private PostgreSQL() {

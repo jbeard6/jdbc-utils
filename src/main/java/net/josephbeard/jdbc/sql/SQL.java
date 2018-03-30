@@ -19,6 +19,17 @@ public abstract class SQL {
         return NO_OFFSET_CLAUSE;
     }
 
+    private static final NoLimitClause NO_LIMIT_CLAUSE = new NoLimitClause();
+
+    /**
+     * Returns a {@link LimitClause} that represents no limit.
+     * 
+     * @return no limit clause
+     */
+    public static LimitClause noLimit() {
+        return NO_LIMIT_CLAUSE;
+    }
+
     private SQL() {
         assert false : "SQL should not be instantiated";
     }
