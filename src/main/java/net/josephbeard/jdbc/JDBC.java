@@ -9,7 +9,7 @@ import org.apache.commons.lang3.Validate;
 /**
  * Utility class for SQL.
  */
-public abstract class SQL {
+public abstract class JDBC {
 
     public static ParameterValue nullValue(int sqlType) {
         return new NullValue(sqlType);
@@ -128,7 +128,7 @@ public abstract class SQL {
         return new ObjectValue(value);
     }
 
-    private SQL() {
+    private JDBC() {
         assert false : "SQL should not be instantiated";
     }
 

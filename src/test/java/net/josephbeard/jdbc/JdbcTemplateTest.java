@@ -1,6 +1,6 @@
 package net.josephbeard.jdbc;
 
-import static net.josephbeard.jdbc.SQL.string;
+import static net.josephbeard.jdbc.JDBC.string;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import net.josephbeard.jdbc.SQL;
+import net.josephbeard.jdbc.JDBC;
 
 public class OrWhereClauseTest {
 
@@ -24,7 +24,7 @@ public class OrWhereClauseTest {
         assertThat("parameters", subject.getParameters(), is(empty()));
         assertThat("sql", subject.toSql(), isEmptyString());
 
-        WhereClause otherClause = new SimpleWhereClause("name = ?", SQL.string("foo"));
+        WhereClause otherClause = new SimpleWhereClause("name = ?", JDBC.string("foo"));
 
         assertThat("and", subject.and(otherClause), is(sameInstance(otherClause)));
 
@@ -34,16 +34,16 @@ public class OrWhereClauseTest {
 
     @Test
     public void one_clause() {
-        SimpleWhereClause clause1 = new SimpleWhereClause("name = ?", SQL.string("foo"));
+        SimpleWhereClause clause1 = new SimpleWhereClause("name = ?", JDBC.string("foo"));
 
         OrWhereClause subject = new OrWhereClause(clause1);
 
         assertThat("clauses", subject.getClauses(), contains(clause1));
         assertThat("condition", subject.getCondition(), is(equalTo("(name = ?)")));
-        assertThat("parameters", subject.getParameters(), contains(SQL.string("foo")));
+        assertThat("parameters", subject.getParameters(), contains(JDBC.string("foo")));
         assertThat("sql", subject.toSql(), is(equalTo(" WHERE (name = ?)")));
 
-        WhereClause otherClause = new SimpleWhereClause("name = ?", SQL.string("foo"));
+        WhereClause otherClause = new SimpleWhereClause("name = ?", JDBC.string("foo"));
 
         assertThat("and", subject.and(otherClause), is(instanceOf(AndWhereClause.class)));
 
@@ -53,17 +53,17 @@ public class OrWhereClauseTest {
 
     @Test
     public void two_clauses() {
-        SimpleWhereClause clause1 = new SimpleWhereClause("name = ?", SQL.string("foo"));
-        SimpleWhereClause clause2 = new SimpleWhereClause("value = ?", SQL.string("bar"));
+        SimpleWhereClause clause1 = new SimpleWhereClause("name = ?", JDBC.string("foo"));
+        SimpleWhereClause clause2 = new SimpleWhereClause("value = ?", JDBC.string("bar"));
 
         OrWhereClause subject = new OrWhereClause(clause1, clause2);
 
         assertThat("clauses", subject.getClauses(), contains(clause1, clause2));
         assertThat("condition", subject.getCondition(), is(equalTo("(name = ? OR value = ?)")));
-        assertThat("parameters", subject.getParameters(), contains(SQL.string("foo"), SQL.string("bar")));
+        assertThat("parameters", subject.getParameters(), contains(JDBC.string("foo"), JDBC.string("bar")));
         assertThat("sql", subject.toSql(), is(equalTo(" WHERE (name = ? OR value = ?)")));
 
-        WhereClause otherClause = new SimpleWhereClause("name = ?", SQL.string("foo"));
+        WhereClause otherClause = new SimpleWhereClause("name = ?", JDBC.string("foo"));
 
         assertThat("and", subject.and(otherClause), is(instanceOf(AndWhereClause.class)));
 
@@ -73,19 +73,19 @@ public class OrWhereClauseTest {
 
     @Test
     public void three_clauses() {
-        SimpleWhereClause clause1 = new SimpleWhereClause("name = ?", SQL.string("foo"));
-        SimpleWhereClause clause2 = new SimpleWhereClause("value = ?", SQL.string("bar"));
-        SimpleWhereClause clause3 = new SimpleWhereClause("qualifier = ?", SQL.string("baz"));
+        SimpleWhereClause clause1 = new SimpleWhereClause("name = ?", JDBC.string("foo"));
+        SimpleWhereClause clause2 = new SimpleWhereClause("value = ?", JDBC.string("bar"));
+        SimpleWhereClause clause3 = new SimpleWhereClause("qualifier = ?", JDBC.string("baz"));
 
         OrWhereClause subject = new OrWhereClause(clause1, clause2, clause3);
 
         assertThat("clauses", subject.getClauses(), contains(clause1, clause2, clause3));
         assertThat("condition", subject.getCondition(), is(equalTo("(name = ? OR value = ? OR qualifier = ?)")));
         assertThat("parameters", subject.getParameters(),
-                contains(SQL.string("foo"), SQL.string("bar"), SQL.string("baz")));
+                contains(JDBC.string("foo"), JDBC.string("bar"), JDBC.string("baz")));
         assertThat("sql", subject.toSql(), is(equalTo(" WHERE (name = ? OR value = ? OR qualifier = ?)")));
 
-        WhereClause otherClause = new SimpleWhereClause("name = ?", SQL.string("foo"));
+        WhereClause otherClause = new SimpleWhereClause("name = ?", JDBC.string("foo"));
 
         assertThat("and", subject.and(otherClause), is(instanceOf(AndWhereClause.class)));
 
@@ -95,24 +95,24 @@ public class OrWhereClauseTest {
 
     @Test
     public void two_clauses_but_one_is_empty() {
-        WhereClause clause1 = new SimpleWhereClause("name = ?", SQL.string("foo"));
+        WhereClause clause1 = new SimpleWhereClause("name = ?", JDBC.string("foo"));
         WhereClause clause2 = new OrWhereClause();
 
         OrWhereClause subject = new OrWhereClause(clause1, clause2);
 
         assertThat("clauses", subject.getClauses(), contains(clause1, clause2));
         assertThat("condition", subject.getCondition(), is(equalTo("(name = ?)")));
-        assertThat("parameters", subject.getParameters(), contains(SQL.string("foo")));
+        assertThat("parameters", subject.getParameters(), contains(JDBC.string("foo")));
         assertThat("sql", subject.toSql(), is(equalTo(" WHERE (name = ?)")));
 
-        WhereClause otherClause = new SimpleWhereClause("value = ?", SQL.string("bar"));
+        WhereClause otherClause = new SimpleWhereClause("value = ?", JDBC.string("bar"));
 
         assertThat("and", subject.and(otherClause), is(instanceOf(AndWhereClause.class)));
 
         assertThat("or", subject.or(otherClause), is(sameInstance(subject)));
         assertThat("or.clauses", subject.getClauses(), contains(clause1, clause2, otherClause));
         assertThat("or.condition", subject.getCondition(), is(equalTo("(name = ? OR value = ?)")));
-        assertThat("or.parameters", subject.getParameters(), contains(SQL.string("foo"), SQL.string("bar")));
+        assertThat("or.parameters", subject.getParameters(), contains(JDBC.string("foo"), JDBC.string("bar")));
         assertThat("or.sql", subject.toSql(), is(equalTo(" WHERE (name = ? OR value = ?)")));
     }
 

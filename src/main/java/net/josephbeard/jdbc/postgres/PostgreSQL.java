@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.postgresql.util.PGobject;
 
 import net.josephbeard.jdbc.ParameterValue;
-import net.josephbeard.jdbc.SQL;
+import net.josephbeard.jdbc.JDBC;
 
 /**
  * Utility class for working with PostgreSQL.
@@ -31,7 +31,7 @@ public abstract class PostgreSQL {
 
     public static ParameterValue uuid(UUID value) throws SQLException {
         if (value == null) {
-            return SQL.nullValue(Types.JAVA_OBJECT); // TODO The PostgreSQL driver probably has something better
+            return JDBC.nullValue(Types.JAVA_OBJECT); // TODO The PostgreSQL driver probably has something better
         }
 
         PGobject object = new PGobject();
@@ -42,7 +42,7 @@ public abstract class PostgreSQL {
 
     public static ParameterValue json(String value) throws SQLException {
         if (value == null) {
-            return SQL.nullValue(Types.JAVA_OBJECT); // TODO The PostgreSQL driver probably has something better
+            return JDBC.nullValue(Types.JAVA_OBJECT); // TODO The PostgreSQL driver probably has something better
         }
         PGobject object = new PGobject();
         object.setType(JSON_TYPE);
@@ -52,7 +52,7 @@ public abstract class PostgreSQL {
 
     public static ParameterValue jsonb(String value) throws SQLException {
         if (value == null) {
-            return SQL.nullValue(Types.JAVA_OBJECT); // TODO The PostgreSQL driver probably has something better
+            return JDBC.nullValue(Types.JAVA_OBJECT); // TODO The PostgreSQL driver probably has something better
         }
         PGobject object = new PGobject();
         object.setType(JSONB_TYPE);
