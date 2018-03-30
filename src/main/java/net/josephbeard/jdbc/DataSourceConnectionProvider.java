@@ -27,4 +27,19 @@ public final class DataSourceConnectionProvider implements ConnectionProvider {
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
+
+    @Override
+    public void close() throws SQLException {
+        if (dataSource instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) dataSource).close();
+            } catch (SQLException e) {
+                // No wrapping required, and this is most likely
+                throw e;
+            } catch (Exception e) {
+                // Wrap with generic SQLException to meet contract
+                throw new SQLException("Failed to close DataSource", e);
+            }
+        }
+    }
 }
