@@ -22,14 +22,11 @@ public abstract class JDBC {
         return BooleanValue.valueOf(value);
     }
 
-    public static ParameterValue string(String value) {
-        if (value == null) {
-            return new NullValue(Types.VARCHAR);
-        }
-        return new StringValue(value);
+    public static ParameterValue bit(boolean value) {
+        return BooleanValue.valueOf(value);
     }
 
-    public static ParameterValue string(Object value) {
+    public static ParameterValue string(CharSequence value) {
         if (value == null) {
             return new NullValue(Types.VARCHAR);
         }

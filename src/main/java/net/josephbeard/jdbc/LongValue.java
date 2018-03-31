@@ -8,34 +8,42 @@ import java.sql.SQLException;
  */
 final class LongValue implements ParameterValue {
 
-    private final Number value;
+    private final long value;
+
+    LongValue(long value) {
+        this.value = value;
+    }
 
     LongValue(Number value) {
         assert value != null : "value is null!";
-        this.value = value;
+        this.value = value.longValue();
     }
 
     @Override
     public void applyValue(PreparedStatement statement, int parameterIndex) throws SQLException {
-        statement.setLong(parameterIndex, value.longValue());
+        statement.setLong(parameterIndex, value);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (obj == null)
             return false;
-
-        LongValue that = (LongValue) o;
-
-        return value.equals(that.value);
-
+        if (getClass() != obj.getClass())
+            return false;
+        LongValue other = (LongValue) obj;
+        if (value != other.value)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (value ^ (value >>> 32));
+        return result;
     }
 
     @Override

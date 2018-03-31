@@ -8,34 +8,42 @@ import java.sql.SQLException;
  */
 final class ShortValue implements ParameterValue {
 
-    private final Number value;
+    private final short value;
+
+    ShortValue(short value) {
+        this.value = value;
+    }
 
     ShortValue(Number value) {
         assert value != null : "value is null!";
-        this.value = value;
+        this.value = value.shortValue();
     }
 
     @Override
     public void applyValue(PreparedStatement statement, int parameterIndex) throws SQLException {
-        statement.setShort(parameterIndex, value.shortValue());
+        statement.setShort(parameterIndex, value);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (obj == null)
             return false;
-
-        ShortValue that = (ShortValue) o;
-
-        return value.equals(that.value);
-
+        if (getClass() != obj.getClass())
+            return false;
+        ShortValue other = (ShortValue) obj;
+        if (value != other.value)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + value;
+        return result;
     }
 
     @Override

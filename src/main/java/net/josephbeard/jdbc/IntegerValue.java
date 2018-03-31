@@ -8,34 +8,42 @@ import java.sql.SQLException;
  */
 final class IntegerValue implements ParameterValue {
 
-    private final Number value;
+    private final int value;
+
+    IntegerValue(int value) {
+        this.value = value;
+    }
 
     IntegerValue(Number value) {
         assert value != null : "value is null!";
-        this.value = value;
+        this.value = value.intValue();
     }
 
     @Override
     public void applyValue(PreparedStatement statement, int parameterIndex) throws SQLException {
-        statement.setInt(parameterIndex, value.intValue());
+        statement.setInt(parameterIndex, value);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (obj == null)
             return false;
-
-        IntegerValue that = (IntegerValue) o;
-
-        return value.equals(that.value);
-
+        if (getClass() != obj.getClass())
+            return false;
+        IntegerValue other = (IntegerValue) obj;
+        if (value != other.value)
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + value;
+        return result;
     }
 
     @Override
